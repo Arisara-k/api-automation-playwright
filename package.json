@@ -1,0 +1,42 @@
+{
+  "name": "api-automation-playwright",
+  "version": "1.0.0",
+  "description": "End-to-End API test automation framework using Playwright &amp; TypeScript, featuring direct PostgreSQL/Supabase database verification and CI/CD integration.",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:regression": "npx playwright test -g @regression",
+    "test:validation": "npx playwright test -g @functional",
+    "test:security": "npx playwright test -g @security",
+    "check": "npx @biomejs/biome check --write",
+    "lint": "npx @biomejs/biome lint --write",
+    "format": "npx @biomejs/biome format --write",
+    "type-check": "npx tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Arisara-k/api-automation-playwright.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Arisara-k/api-automation-playwright/issues"
+  },
+  "homepage": "https://github.com/Arisara-k/api-automation-playwright#readme",
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.4",
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^26.6.6",
+    "@types/pg": "^8.23.1",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "decimal.js": "^10.6.0",
+    "dotenv": "^18.0.9",
+    "dotenv-defaults": "^6.0.0",
+    "pg": "^8.23.1",
+    "zod": "^4.6.7"
+  }
+}

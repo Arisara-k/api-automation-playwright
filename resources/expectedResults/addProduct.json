@@ -1,0 +1,41 @@
+{
+  "business": {
+    "negativePrice": {
+      "code": "23514",
+      "message": "check constraint"
+    },
+    "negativeStock": {
+      "code": "23514",
+      "message": "check constraint"
+    },
+    "unauthorized": {
+      "message": "Invalid API key"
+    }
+  },
+  "validation": {
+    "emptyName": {
+      "code": "23514"
+    },
+    "invalidPriceFormat": {
+      "code": "22P02"
+    },
+    "invalidStockFormat": {
+      "code": "22P02"
+    },
+    "missingRequiredParam": {
+      "code": "PGRST202",
+      "hint": "If a new function was created in the database with this name and parameters, try reloading the schema cache."
+    },
+    "methodNotAllowed": {
+      "code": "405"
+    }
+  },
+  "security": {
+    "unauthorizedReplay": {
+      "message": "Invalid API key"
+    },
+    "forbiddenPattern": {
+      "prohibitedKeywords": ["password", "secret", "pg_hba", "BEGIN PRIVATE KEY", "/usr/local", "stack trace"]
+    }
+  }
+}

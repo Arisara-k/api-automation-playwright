@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "commonjs",
+    "paths": {
+      "@globalVariable": ["./globalVariables.ts"],
+      "@plugins/*": ["./plugins/*"],
+      "@resources/*": ["./resources/*"],
+      "@models/*": ["./supports/models/*"],
+      "@services/*": ["./supports/services/*"],
+      "@utils/*": ["./supports/utils/*"]
+    },
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
+  }
+}

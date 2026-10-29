@@ -1,0 +1,100 @@
+{
+  "headers": {
+    "validHeaders": {
+      "Content-Type": "application/json"
+    },
+    "missingAuthHeaders": {},
+    "invalidAuthHeaders": {
+      "Content-Type": "application/json",
+      "apikey": "invalid-anon-key-xyz",
+      "Authorization": "Bearer invalid-token-xyz"
+    },
+    "expiredAuthHeaders": {
+      "Content-Type": "application/json",
+      "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnZmJ2YnlnYWh2enBzY2FidnJxIiwicm9sZSI6ImFub24iLCJleHAiOjE1MTYyMzkwMjJ9.invalidSignature",
+      "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnZmJ2YnlnYWh2enBzY2FidnJxIiwicm9sZSI6ImFub24iLCJleHAiOjE1MTYyMzkwMjJ9.invalidSignature"
+    }
+  },
+  "business": {
+    "validProduct": {
+      "p_name": "Premium Wireless Headphones",
+      "p_price": 2999.0,
+      "p_stock": 50
+    },
+    "freeProductBoundary": {
+      "p_name": "Complimentary Welcome Sticker Pack",
+      "p_price": 0.0,
+      "p_stock": 100
+    },
+    "zeroStockBoundary": {
+      "p_name": "Limited Edition Collectible Figure",
+      "p_price": 4500.0,
+      "p_stock": 0
+    },
+    "negativePrice": {
+      "p_name": "Invalid Negative Price Gadget",
+      "p_price": -150.0,
+      "p_stock": 10
+    },
+    "negativeStock": {
+      "p_name": "Invalid Negative Stock Gadget",
+      "p_price": 500.0,
+      "p_stock": -5
+    }
+  },
+  "validation": {
+    "emptyName": {
+      "p_name": "",
+      "p_price": 100.0,
+      "p_stock": 10
+    },
+    "invalidPriceFormat": {
+      "p_name": "Malformed Price Item",
+      "p_price": "one_hundred_baht",
+      "p_stock": 10
+    },
+    "invalidStockFormat": {
+      "p_name": "Decimal Stock Item",
+      "p_price": 250.0,
+      "p_stock": 10.75
+    },
+    "missingRequiredParam": {
+      "p_price": 99.0,
+      "p_stock": 20
+    }
+  },
+  "security": {
+    "sqlInjection": {
+      "p_name": "'; DROP TABLE products; --",
+      "p_price": 199.0,
+      "p_stock": 5
+    },
+    "xssInjection": {
+      "p_name": "<script>alert('xss_vector')</script>",
+      "p_price": 49.0,
+      "p_stock": 15
+    },
+    "burstRequests": [
+      {
+        "p_name": "Burst Load Item A",
+        "p_price": 120.0,
+        "p_stock": 10
+      },
+      {
+        "p_name": "Burst Load Item B",
+        "p_price": 130.0,
+        "p_stock": 20
+      },
+      {
+        "p_name": "Burst Load Item C",
+        "p_price": 140.0,
+        "p_stock": 30
+      }
+    ],
+    "sensitiveDataPayload": {
+      "p_name": "Malformed Trigger Probe",
+      "p_price": "NaN",
+      "p_stock": null
+    }
+  }
+}
