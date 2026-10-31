@@ -5,6 +5,7 @@
 [![Playwright](https://img.shields.io/badge/Playwright-v1.64+-blue.svg)](https://playwright.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-v7+-blue.svg)](https://www.typescriptlang.org/)
 [![Biome](https://img.shields.io/badge/Linter-Biome-orange.svg)](https://biomejs.dev/)
+[![Pair Programmed with Google Antigravity](https://img.shields.io/badge/Pair%20Programmed%20with-Google%20Antigravity-4285F4?logo=google&logoColor=white)](https://deepmind.google/)
 
 An enterprise-grade, end-to-end API test automation framework built with **Playwright**, **TypeScript**, and **PostgreSQL (Supabase)**. Features **Two-Layer Verification** (Zod runtime contract schema validation + direct database state assertion), Service/Model architecture, data-driven test fixtures, and automated CI/CD pipelines via GitHub Actions.
 
@@ -21,6 +22,7 @@ An enterprise-grade, end-to-end API test automation framework built with **Playw
 - [Reporting & Artifacts](#-reporting--artifacts)
 - [Code Quality & Linting](#-code-quality--linting)
 - [CI/CD Pipeline (GitHub Actions)](#-cicd-pipeline-github-actions)
+- [AI Pair Programming & Attribution](#-ai-pair-programming--attribution)
 
 ---
 
@@ -192,3 +194,9 @@ Ensure the following repository secrets are configured in GitHub (**Settings > S
 1. Go to the **Actions** tab on GitHub.
 2. Select the latest workflow run.
 3. Under the **Artifacts** section, download `playwright-report.zip` to review detailed execution logs and traces.
+
+---
+
+## 🤖 AI Pair Programming & Attribution
+
+This project was designed, developed, and verified with the pair-programming collaboration of **Google Antigravity** (powered by Gemini models from Google DeepMind), assisting in test architecture design, two-layer verification patterns, and CI/CD workflow automation.
