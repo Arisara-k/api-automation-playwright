@@ -3,6 +3,7 @@ import { onOrdersTable } from "@models/ordersTable";
 import { onProductsTable } from "@models/productsTable";
 import { test } from "@playwright/test";
 import dataTest from "@resources/dataTest/checkoutOrder.json";
+import commonDataTest from "@resources/dataTest/common.json";
 import expectedResult from "@resources/expectedResults/checkoutOrder.json";
 import commonResponse from "@resources/expectedResults/common.json";
 import { onCheckoutOrderService } from "@services/checkoutOrderService";
@@ -29,10 +30,40 @@ test.describe("Checkout Order RPC - Tier 3: Security Test Suite", () => {
   });
 
   // ===========================================================================
-  // 1. SQL Injection Vector (@security @high)
+  // 1. Authorization Matrix & IDOR (@security @high)
+  // ===========================================================================
+  test("POST : [/rest/v1/rpc/checkout_order] response [failed] when called with unauthorized role token (Auth Matrix)", {
+    tag: ["@security", "@high"]
+  }, async () => {
+    let response: Record<string, any> = {};
+
+    await test.step("Call POST checkout_order API with unauthorized role token > should reject unauthorized request", async () => {
+      response = await onCheckoutOrderService.callAPI(checkoutOrderEndpoint, {
+        method: "POST",
+        body: {
+          ...dataTest.business.validCheckout,
+          p_product_id: burstProductId
+        },
+        skipDefaultAuth: true,
+        headers: commonDataTest.headers.unauthorizedRoleHeaders
+      });
+    });
+
+    await test.step("Verify API Response > HTTP Status should be 401 Unauthorized", () => {
+      onCommonFunction.compareRespMsgWithExpectedFile(
+        response.statusCode,
+        commonResponse.httpStatus.failedCode.unauthorized,
+        response.body,
+        commonResponse.auth.unauthorizedRole
+      );
+    });
+  });
+
+  // ===========================================================================
+  // 2. Input Tampering & Injection (@security @medium)
   // ===========================================================================
   test("POST : [/rest/v1/rpc/checkout_order] response [failed] when payload contains SQL injection in parameter", {
-    tag: ["@security", "@high"]
+    tag: ["@security", "@medium"]
   }, async () => {
     let response: Record<string, any> = {};
 
@@ -54,11 +85,8 @@ test.describe("Checkout Order RPC - Tier 3: Security Test Suite", () => {
     });
   });
 
-  // ===========================================================================
-  // 2. XSS & Malicious Input (@security @high)
-  // ===========================================================================
   test("POST : [/rest/v1/rpc/checkout_order] response [failed] when payload contains XSS / malicious script payload", {
-    tag: ["@security", "@high"]
+    tag: ["@security", "@medium"]
   }, async () => {
     let response: Record<string, any> = {};
 
@@ -91,9 +119,12 @@ test.describe("Checkout Order RPC - Tier 3: Security Test Suite", () => {
     await test.step("Call POST checkout_order API with expired/tampered JWT token > should reject unauthorized replay", async () => {
       response = await onCheckoutOrderService.callAPI(checkoutOrderEndpoint, {
         method: "POST",
-        body: dataTest.business.validCheckout,
+        body: {
+          ...dataTest.business.validCheckout,
+          p_product_id: burstProductId
+        },
         skipDefaultAuth: true,
-        headers: dataTest.headers.expiredAuthHeaders
+        headers: commonDataTest.headers.expiredAuthHeaders
       });
     });
 
@@ -102,7 +133,7 @@ test.describe("Checkout Order RPC - Tier 3: Security Test Suite", () => {
         response.statusCode,
         commonResponse.httpStatus.failedCode.unauthorized,
         response.body,
-        expectedResult.security.unauthorizedReplay
+        commonResponse.auth.unauthorizedReplay
       );
     });
   });
@@ -134,8 +165,11 @@ test.describe("Checkout Order RPC - Tier 3: Security Test Suite", () => {
         if (id) {
           createdOrderIds.push(id);
         }
-        const isValidStatus = resp.statusCode === 200 || resp.statusCode === 400 || resp.statusCode === 429;
-        onCommonFunction.verifyFailedResponse({ statusCode: isValidStatus ? 200 : resp.statusCode, body: {} }, 200, {});
+        onCommonFunction.verifyAllowedStatusCodes(resp.statusCode, [
+          commonResponse.httpStatus.successCode.ok,
+          commonResponse.httpStatus.failedCode.badRequest,
+          commonResponse.httpStatus.failedCode.tooManyRequests
+        ]);
       }
     });
   });
@@ -156,14 +190,9 @@ test.describe("Checkout Order RPC - Tier 3: Security Test Suite", () => {
     });
 
     await test.step("Verify Error Response > Response body must not leak sensitive DB credentials or file system paths", () => {
-      const bodyStr = JSON.stringify(response.body).toLowerCase();
-      const hasLeak = expectedResult.security.forbiddenPattern.prohibitedKeywords.some((keyword) =>
-        bodyStr.includes(keyword.toLowerCase())
-      );
-      onCommonFunction.verifyFailedResponse(
-        { statusCode: hasLeak ? 500 : response.statusCode, body: { leaked: hasLeak } },
-        response.statusCode,
-        { leaked: false }
+      onCommonFunction.verifyNoSensitiveDataLeak(
+        response.body,
+        commonResponse.security.forbiddenPattern.prohibitedKeywords
       );
     });
   });

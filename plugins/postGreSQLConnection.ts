@@ -73,9 +73,3 @@ export async function query<T extends QueryResultRow = any>(sql: string, params:
     client.release();
   }
 }
-
-export const db = {
-  query,
-  getPool: getDatabasePool,
-  close: closeDatabaseConnection
-};

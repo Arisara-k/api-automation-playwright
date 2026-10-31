@@ -34,15 +34,26 @@ class CommonFunction {
   }
 
   /**
-   * Simple failed response verification shorthand.
+   * Validates that actual status code is within an allowed set of HTTP codes.
    */
-  public verifyFailedResponse(
-    actualResult: Record<string, any>,
-    expectedCode: number,
-    expectedResult: Record<string, any>
-  ): void {
-    expect(actualResult.statusCode).toBe(expectedCode);
-    expect(actualResult.body).toEqual(expectedResult);
+  public verifyAllowedStatusCodes(actualStatusCode: number, allowedCodes: number[]): void {
+    expect(
+      allowedCodes,
+      `Status code ${actualStatusCode} not in allowed codes: [${allowedCodes.join(", ")}]`
+    ).toContain(actualStatusCode);
+  }
+
+  /**
+   * Asserts that response body does not leak sensitive database credentials or internal stack traces.
+   */
+  public verifyNoSensitiveDataLeak(responseBody: Record<string, any>, prohibitedKeywords: string[]): void {
+    const serialized = JSON.stringify(responseBody).toLowerCase();
+    for (const keyword of prohibitedKeywords) {
+      expect(
+        serialized.includes(keyword.toLowerCase()),
+        `Response body leaked sensitive keyword "${keyword}": ${serialized}`
+      ).toBeFalsy();
+    }
   }
 }
 

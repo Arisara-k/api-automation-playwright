@@ -2,6 +2,8 @@ import { ENV } from "@globalVariable";
 import { onProductsTable } from "@models/productsTable";
 import { test } from "@playwright/test";
 import dataTest from "@resources/dataTest/addProduct.json";
+import commonDataTest from "@resources/dataTest/common.json";
+import expectedResult from "@resources/expectedResults/addProduct.json";
 import commonResponse from "@resources/expectedResults/common.json";
 import { onAddProductService } from "@services/addProductService";
 import { onCommonFunction } from "@utils/commonFunction";
@@ -36,7 +38,15 @@ test.describe("Add Product RPC - Tier 2: Business Test Suite", () => {
         createdProductIds.push(productId);
       }
       const dbRecord = await onProductsTable.getProductById(productId);
-      onProductsTable.verifyProductMatchesDb(response.body, dbRecord);
+      onProductsTable.verifyProductMatchesDb(
+        {
+          ...response.body,
+          name: dataTest.business.validProduct.p_name,
+          price: dataTest.business.validProduct.p_price,
+          stock: dataTest.business.validProduct.p_stock
+        },
+        dbRecord
+      );
     });
   });
 
@@ -62,7 +72,15 @@ test.describe("Add Product RPC - Tier 2: Business Test Suite", () => {
         createdProductIds.push(productId);
       }
       const dbRecord = await onProductsTable.getProductById(productId);
-      onProductsTable.verifyProductMatchesDb(response.body, dbRecord);
+      onProductsTable.verifyProductMatchesDb(
+        {
+          ...response.body,
+          name: dataTest.business.freeProductBoundary.p_name,
+          price: dataTest.business.freeProductBoundary.p_price,
+          stock: dataTest.business.freeProductBoundary.p_stock
+        },
+        dbRecord
+      );
     });
   });
 
@@ -88,7 +106,15 @@ test.describe("Add Product RPC - Tier 2: Business Test Suite", () => {
         createdProductIds.push(productId);
       }
       const dbRecord = await onProductsTable.getProductById(productId);
-      onProductsTable.verifyProductMatchesDb(response.body, dbRecord);
+      onProductsTable.verifyProductMatchesDb(
+        {
+          ...response.body,
+          name: dataTest.business.zeroStockBoundary.p_name,
+          price: dataTest.business.zeroStockBoundary.p_price,
+          stock: dataTest.business.zeroStockBoundary.p_stock
+        },
+        dbRecord
+      );
     });
   });
 
@@ -104,8 +130,14 @@ test.describe("Add Product RPC - Tier 2: Business Test Suite", () => {
       });
     });
 
-    await test.step("Verify API Response > HTTP Status should be 400 Bad Request", () => {
-      onCommonFunction.verifyFailedResponse(response, commonResponse.httpStatus.failedCode.badRequest, response.body);
+    await test.step("Verify API Response > HTTP Status should be 400 Bad Request with price range error", () => {
+      onCommonFunction.compareRespMsgWithPattern(
+        response.statusCode,
+        commonResponse.httpStatus.failedCode.badRequest,
+        response.body,
+        expectedResult.business.negativePrice.error.code,
+        /Price cannot be less than zero/
+      );
     });
   });
 
@@ -121,8 +153,14 @@ test.describe("Add Product RPC - Tier 2: Business Test Suite", () => {
       });
     });
 
-    await test.step("Verify API Response > HTTP Status should be 400 Bad Request", () => {
-      onCommonFunction.verifyFailedResponse(response, commonResponse.httpStatus.failedCode.badRequest, response.body);
+    await test.step("Verify API Response > HTTP Status should be 400 Bad Request with negative stock error", () => {
+      onCommonFunction.compareRespMsgWithPattern(
+        response.statusCode,
+        commonResponse.httpStatus.failedCode.badRequest,
+        response.body,
+        expectedResult.business.negativeStock.error.code,
+        /Stock cannot be negative/
+      );
     });
   });
 
@@ -136,12 +174,17 @@ test.describe("Add Product RPC - Tier 2: Business Test Suite", () => {
         method: "POST",
         body: dataTest.business.validProduct,
         skipDefaultAuth: true,
-        headers: dataTest.headers.missingAuthHeaders
+        headers: commonDataTest.headers.missingAuthHeaders
       });
     });
 
     await test.step("Verify API Response > HTTP Status should be 401 Unauthorized", () => {
-      onCommonFunction.verifyFailedResponse(response, commonResponse.httpStatus.failedCode.unauthorized, response.body);
+      onCommonFunction.compareRespMsgWithExpectedFile(
+        response.statusCode,
+        commonResponse.httpStatus.failedCode.unauthorized,
+        response.body,
+        commonResponse.auth.unauthorizedMissingKey
+      );
     });
   });
 
@@ -155,12 +198,17 @@ test.describe("Add Product RPC - Tier 2: Business Test Suite", () => {
         method: "POST",
         body: dataTest.business.validProduct,
         skipDefaultAuth: true,
-        headers: dataTest.headers.invalidAuthHeaders
+        headers: commonDataTest.headers.invalidAuthHeaders
       });
     });
 
     await test.step("Verify API Response > HTTP Status should be 401 Unauthorized", () => {
-      onCommonFunction.verifyFailedResponse(response, commonResponse.httpStatus.failedCode.unauthorized, response.body);
+      onCommonFunction.compareRespMsgWithExpectedFile(
+        response.statusCode,
+        commonResponse.httpStatus.failedCode.unauthorized,
+        response.body,
+        commonResponse.auth.unauthorizedInvalidKey
+      );
     });
   });
 });

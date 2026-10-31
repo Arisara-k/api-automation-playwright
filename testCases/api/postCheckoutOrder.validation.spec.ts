@@ -140,8 +140,8 @@ test.describe("Checkout Order RPC - Tier 1: Validation Test Suite", () => {
         response.statusCode,
         commonResponse.httpStatus.failedCode.methodNotAllowed,
         response.body,
-        expectedResult.validation.methodNotAllowed.code,
-        /Cannot use the DELETE method on RPC/
+        commonResponse.rpc.methodNotAllowed.code,
+        new RegExp(commonResponse.rpc.methodNotAllowed.message)
       );
     });
   });

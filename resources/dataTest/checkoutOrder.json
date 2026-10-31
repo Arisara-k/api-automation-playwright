@@ -1,20 +1,4 @@
 {
-  "headers": {
-    "validHeaders": {
-      "Content-Type": "application/json"
-    },
-    "missingAuthHeaders": {},
-    "invalidAuthHeaders": {
-      "Content-Type": "application/json",
-      "apikey": "invalid-anon-key-xyz",
-      "Authorization": "Bearer invalid-token-xyz"
-    },
-    "expiredAuthHeaders": {
-      "Content-Type": "application/json",
-      "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnZmJ2YnlnYWh2enBzY2FidnJxIiwicm9sZSI6ImFub24iLCJleHAiOjE1MTYyMzkwMjJ9.invalidSignature",
-      "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnZmJ2YnlnYWh2enBzY2FidnJxIiwicm9sZSI6ImFub24iLCJleHAiOjE1MTYyMzkwMjJ9.invalidSignature"
-    }
-  },
   "business": {
     "validCheckout": {
       "p_product_id": 1,

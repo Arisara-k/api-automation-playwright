@@ -10,15 +10,11 @@ export const productItemSchema = z.object({
   name: z.string().optional(),
   price: z.coerce.number().optional(),
   stock: z.coerce.number().optional(),
+  status: z.string().optional(),
   created_at: z.string().optional()
 });
 
-export const addProductSuccessSchema = z.union([
-  productItemSchema,
-  z.array(productItemSchema),
-  z.coerce.number(),
-  z.record(z.string(), z.any())
-]);
+export const addProductSuccessSchema = z.union([productItemSchema, z.array(productItemSchema), z.coerce.number()]);
 
 export interface CallApiOptions {
   headers?: Record<string, string>;
@@ -66,49 +62,50 @@ class AddProductService {
       ignoreHTTPSErrors: true
     });
 
-    let rawResponse: import("@playwright/test").APIResponse;
-    const requestOptions = {
-      headers: mergedHeaders,
-      params,
-      ...(body !== undefined ? { data: body } : {})
-    };
-
-    switch (method.toUpperCase()) {
-      case "POST":
-        rawResponse = await ctx.post(path, requestOptions);
-        break;
-      case "GET":
-        rawResponse = await ctx.get(path, requestOptions);
-        break;
-      case "PUT":
-        rawResponse = await ctx.put(path, requestOptions);
-        break;
-      case "PATCH":
-        rawResponse = await ctx.patch(path, requestOptions);
-        break;
-      case "DELETE":
-        rawResponse = await ctx.delete(path, requestOptions);
-        break;
-      default:
-        rawResponse = await ctx.post(path, requestOptions);
-        break;
-    }
-
-    let parsedBody: Record<string, any> = {};
     try {
-      parsedBody = await rawResponse.json();
-    } catch {
-      parsedBody = { rawText: await rawResponse.text() };
+      let rawResponse: import("@playwright/test").APIResponse;
+      const requestOptions = {
+        headers: mergedHeaders,
+        params,
+        ...(body !== undefined ? { data: body } : {})
+      };
+
+      switch (method.toUpperCase()) {
+        case "POST":
+          rawResponse = await ctx.post(path, requestOptions);
+          break;
+        case "GET":
+          rawResponse = await ctx.get(path, requestOptions);
+          break;
+        case "PUT":
+          rawResponse = await ctx.put(path, requestOptions);
+          break;
+        case "PATCH":
+          rawResponse = await ctx.patch(path, requestOptions);
+          break;
+        case "DELETE":
+          rawResponse = await ctx.delete(path, requestOptions);
+          break;
+        default:
+          rawResponse = await ctx.post(path, requestOptions);
+          break;
+      }
+
+      let parsedBody: Record<string, any> = {};
+      try {
+        parsedBody = await rawResponse.json();
+      } catch {
+        parsedBody = { rawText: await rawResponse.text() };
+      }
+
+      return {
+        statusCode: rawResponse.status(),
+        statusText: rawResponse.statusText(),
+        body: parsedBody
+      };
+    } finally {
+      await ctx.dispose();
     }
-
-    const result = {
-      statusCode: rawResponse.status(),
-      statusText: rawResponse.statusText(),
-      body: parsedBody
-    };
-
-    await ctx.dispose();
-    return result;
   }
 
   /**

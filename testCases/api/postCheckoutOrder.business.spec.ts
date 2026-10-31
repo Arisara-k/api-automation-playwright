@@ -1,9 +1,9 @@
 import { ENV } from "@globalVariable";
 import { onOrdersTable } from "@models/ordersTable";
-import { onProductsTable } from "@models/productsTable";
+import { onProductsTable, type ProductRecord } from "@models/productsTable";
 import { test } from "@playwright/test";
 import dataTest from "@resources/dataTest/checkoutOrder.json";
-import expectedResult from "@resources/expectedResults/checkoutOrder.json";
+import commonDataTest from "@resources/dataTest/common.json";
 import commonResponse from "@resources/expectedResults/common.json";
 import { onCheckoutOrderService } from "@services/checkoutOrderService";
 import { onCommonFunction } from "@utils/commonFunction";
@@ -40,7 +40,8 @@ test.describe("Checkout Order RPC - Tier 2: Business Test Suite", () => {
 
     await test.step("Prepare Database State > Query initial product stock before order", async () => {
       const product = await onProductsTable.getProductById(testProductId);
-      initialStock = Number(product?.stock ?? 0);
+      onProductsTable.verifyProductMatchesDb({ id: testProductId }, product);
+      initialStock = Number((product as ProductRecord).stock);
     });
 
     await test.step("Call POST checkout_order API with valid product and quantity > should create confirmed order", async () => {
@@ -63,7 +64,8 @@ test.describe("Checkout Order RPC - Tier 2: Business Test Suite", () => {
       onOrdersTable.verifyOrderMatchesDb(response.body, dbRecord);
 
       const productAfter = await onProductsTable.getProductById(testProductId);
-      const updatedStock = Number(productAfter?.stock ?? 0);
+      onProductsTable.verifyProductMatchesDb({ id: testProductId }, productAfter);
+      const updatedStock = Number((productAfter as ProductRecord).stock);
       onProductsTable.verifyStockDecremented(initialStock, updatedStock, checkoutPayload.p_quantity);
     });
   });
@@ -158,7 +160,7 @@ test.describe("Checkout Order RPC - Tier 2: Business Test Suite", () => {
           p_product_id: testProductId
         },
         skipDefaultAuth: true,
-        headers: dataTest.headers.missingAuthHeaders
+        headers: commonDataTest.headers.missingAuthHeaders
       });
     });
 
@@ -167,7 +169,7 @@ test.describe("Checkout Order RPC - Tier 2: Business Test Suite", () => {
         response.statusCode,
         commonResponse.httpStatus.failedCode.unauthorized,
         response.body,
-        expectedResult.business.unauthorizedMissingKey
+        commonResponse.auth.unauthorizedMissingKey
       );
     });
   });
@@ -185,7 +187,7 @@ test.describe("Checkout Order RPC - Tier 2: Business Test Suite", () => {
           p_product_id: testProductId
         },
         skipDefaultAuth: true,
-        headers: dataTest.headers.invalidAuthHeaders
+        headers: commonDataTest.headers.invalidAuthHeaders
       });
     });
 
@@ -194,7 +196,7 @@ test.describe("Checkout Order RPC - Tier 2: Business Test Suite", () => {
         response.statusCode,
         commonResponse.httpStatus.failedCode.unauthorized,
         response.body,
-        expectedResult.business.unauthorizedInvalidKey
+        commonResponse.auth.unauthorizedInvalidKey
       );
     });
   });
