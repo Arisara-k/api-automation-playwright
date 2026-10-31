@@ -2,7 +2,7 @@ import { ENV } from "@globalVariable";
 import { onProductsTable } from "@models/productsTable";
 import { test } from "@playwright/test";
 import dataTest from "@resources/dataTest/addProduct.json";
-import expectedResult from "@resources/expectedResults/addProduct.json";
+import commonDataTest from "@resources/dataTest/common.json";
 import commonResponse from "@resources/expectedResults/common.json";
 import { onAddProductService } from "@services/addProductService";
 import { onCommonFunction } from "@utils/commonFunction";
@@ -16,10 +16,37 @@ test.describe("Add Product RPC - Tier 3: Security Test Suite", () => {
   });
 
   // ===========================================================================
-  // 1. SQL Injection Vector (@security @high)
+  // 1. Authorization Matrix & IDOR (@security @high)
+  // ===========================================================================
+  test("POST : [/rest/v1/rpc/add_product] response [failed] when called with unauthorized role token (Auth Matrix)", {
+    tag: ["@security", "@high"]
+  }, async () => {
+    let response: Record<string, any> = {};
+
+    await test.step("Call POST add_product API with unauthorized role token > should reject unauthorized request", async () => {
+      response = await onAddProductService.callAPI(addProductEndpoint, {
+        method: "POST",
+        body: dataTest.business.validProduct,
+        skipDefaultAuth: true,
+        headers: commonDataTest.headers.unauthorizedRoleHeaders
+      });
+    });
+
+    await test.step("Verify API Response > HTTP Status should be 401 Unauthorized", () => {
+      onCommonFunction.compareRespMsgWithExpectedFile(
+        response.statusCode,
+        commonResponse.httpStatus.failedCode.unauthorized,
+        response.body,
+        commonResponse.auth.unauthorizedRole
+      );
+    });
+  });
+
+  // ===========================================================================
+  // 2. Input Tampering & Injection (@security @medium)
   // ===========================================================================
   test("POST : [/rest/v1/rpc/add_product] response [success] when payload contains SQL injection vector (Treated as literal)", {
-    tag: ["@security", "@high"]
+    tag: ["@security", "@medium"]
   }, async () => {
     let response: Record<string, any> = {};
 
@@ -40,15 +67,20 @@ test.describe("Add Product RPC - Tier 3: Security Test Suite", () => {
         createdProductIds.push(productId);
       }
       const dbRecord = await onProductsTable.getProductById(productId);
-      onProductsTable.verifyProductMatchesDb(response.body, dbRecord);
+      onProductsTable.verifyProductMatchesDb(
+        {
+          ...response.body,
+          name: dataTest.security.sqlInjection.p_name,
+          price: dataTest.security.sqlInjection.p_price,
+          stock: dataTest.security.sqlInjection.p_stock
+        },
+        dbRecord
+      );
     });
   });
 
-  // ===========================================================================
-  // 2. XSS & Script Injection (@security @high)
-  // ===========================================================================
   test("POST : [/rest/v1/rpc/add_product] response [success] when payload contains script tags (Stored as literal string)", {
-    tag: ["@security", "@high"]
+    tag: ["@security", "@medium"]
   }, async () => {
     let response: Record<string, any> = {};
 
@@ -69,7 +101,15 @@ test.describe("Add Product RPC - Tier 3: Security Test Suite", () => {
         createdProductIds.push(productId);
       }
       const dbRecord = await onProductsTable.getProductById(productId);
-      onProductsTable.verifyProductMatchesDb(response.body, dbRecord);
+      onProductsTable.verifyProductMatchesDb(
+        {
+          ...response.body,
+          name: dataTest.security.xssInjection.p_name,
+          price: dataTest.security.xssInjection.p_price,
+          stock: dataTest.security.xssInjection.p_stock
+        },
+        dbRecord
+      );
     });
   });
 
@@ -86,12 +126,17 @@ test.describe("Add Product RPC - Tier 3: Security Test Suite", () => {
         method: "POST",
         body: dataTest.business.validProduct,
         skipDefaultAuth: true,
-        headers: dataTest.headers.expiredAuthHeaders
+        headers: commonDataTest.headers.expiredAuthHeaders
       });
     });
 
     await test.step("Verify API Response > HTTP Status should be 401 Unauthorized", () => {
-      onCommonFunction.verifyFailedResponse(response, commonResponse.httpStatus.failedCode.unauthorized, response.body);
+      onCommonFunction.compareRespMsgWithExpectedFile(
+        response.statusCode,
+        commonResponse.httpStatus.failedCode.unauthorized,
+        response.body,
+        commonResponse.auth.unauthorizedReplay
+      );
     });
   });
 
@@ -119,8 +164,11 @@ test.describe("Add Product RPC - Tier 3: Security Test Suite", () => {
         if (id) {
           createdProductIds.push(id);
         }
-        const isValidStatus = resp.statusCode === 201 || resp.statusCode === 200 || resp.statusCode === 429;
-        onCommonFunction.verifyFailedResponse({ statusCode: isValidStatus ? 201 : resp.statusCode, body: {} }, 201, {});
+        onCommonFunction.verifyAllowedStatusCodes(resp.statusCode, [
+          commonResponse.httpStatus.successCode.created,
+          commonResponse.httpStatus.successCode.ok,
+          commonResponse.httpStatus.failedCode.tooManyRequests
+        ]);
       }
     });
   });
@@ -141,14 +189,9 @@ test.describe("Add Product RPC - Tier 3: Security Test Suite", () => {
     });
 
     await test.step("Verify Error Response > Response body must not leak sensitive DB credentials or file system paths", () => {
-      const bodyStr = JSON.stringify(response.body).toLowerCase();
-      const hasLeak = expectedResult.security.forbiddenPattern.prohibitedKeywords.some((keyword) =>
-        bodyStr.includes(keyword.toLowerCase())
-      );
-      onCommonFunction.verifyFailedResponse(
-        { statusCode: hasLeak ? 500 : response.statusCode, body: { leaked: hasLeak } },
-        response.statusCode,
-        { leaked: false }
+      onCommonFunction.verifyNoSensitiveDataLeak(
+        response.body,
+        commonResponse.security.forbiddenPattern.prohibitedKeywords
       );
     });
   });

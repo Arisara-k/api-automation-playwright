@@ -1,6 +1,7 @@
 import { ENV } from "@globalVariable";
 import { test } from "@playwright/test";
 import dataTest from "@resources/dataTest/addProduct.json";
+import expectedResult from "@resources/expectedResults/addProduct.json";
 import commonResponse from "@resources/expectedResults/common.json";
 import { onAddProductService } from "@services/addProductService";
 import { onCommonFunction } from "@utils/commonFunction";
@@ -20,8 +21,14 @@ test.describe("Add Product RPC - Tier 1: Validation Test Suite", () => {
       });
     });
 
-    await test.step("Verify API Response > HTTP Status should be 400 Bad Request", () => {
-      onCommonFunction.verifyFailedResponse(response, commonResponse.httpStatus.failedCode.badRequest, response.body);
+    await test.step("Verify API Response > HTTP Status should be 400 Bad Request with empty name error", () => {
+      onCommonFunction.compareRespMsgWithPattern(
+        response.statusCode,
+        commonResponse.httpStatus.failedCode.badRequest,
+        response.body,
+        expectedResult.validation.emptyName.error.code,
+        /Product name cannot be empty/
+      );
     });
   });
 
@@ -37,8 +44,14 @@ test.describe("Add Product RPC - Tier 1: Validation Test Suite", () => {
       });
     });
 
-    await test.step("Verify API Response > HTTP Status should be 400 Bad Request", () => {
-      onCommonFunction.verifyFailedResponse(response, commonResponse.httpStatus.failedCode.badRequest, response.body);
+    await test.step("Verify API Response > HTTP Status should be 400 Bad Request with invalid price format error", () => {
+      onCommonFunction.compareRespMsgWithPattern(
+        response.statusCode,
+        commonResponse.httpStatus.failedCode.badRequest,
+        response.body,
+        expectedResult.validation.invalidPriceFormat.error.code,
+        /Price must be a valid number/
+      );
     });
   });
 
@@ -54,8 +67,14 @@ test.describe("Add Product RPC - Tier 1: Validation Test Suite", () => {
       });
     });
 
-    await test.step("Verify API Response > HTTP Status should be 400 Bad Request", () => {
-      onCommonFunction.verifyFailedResponse(response, commonResponse.httpStatus.failedCode.badRequest, response.body);
+    await test.step("Verify API Response > HTTP Status should be 400 Bad Request with invalid stock format error", () => {
+      onCommonFunction.compareRespMsgWithPattern(
+        response.statusCode,
+        commonResponse.httpStatus.failedCode.badRequest,
+        response.body,
+        expectedResult.validation.invalidStockFormat.error.code,
+        /Stock must be an integer/
+      );
     });
   });
 
@@ -71,8 +90,14 @@ test.describe("Add Product RPC - Tier 1: Validation Test Suite", () => {
       });
     });
 
-    await test.step("Verify API Response > HTTP Status should be 404 Function Not Found", () => {
-      onCommonFunction.verifyFailedResponse(response, commonResponse.httpStatus.failedCode.notFound, response.body);
+    await test.step("Verify API Response > HTTP Status should be 404 Function Not Found with schema cache error", () => {
+      onCommonFunction.compareRespMsgWithPattern(
+        response.statusCode,
+        commonResponse.httpStatus.failedCode.notFound,
+        response.body,
+        expectedResult.validation.missingRequiredParam.code,
+        /schema cache/
+      );
     });
   });
 
@@ -87,11 +112,13 @@ test.describe("Add Product RPC - Tier 1: Validation Test Suite", () => {
       });
     });
 
-    await test.step("Verify API Response > HTTP Status should be 405 Method Not Allowed", () => {
-      onCommonFunction.verifyFailedResponse(
-        response,
+    await test.step("Verify API Response > HTTP Status should be 405 Method Not Allowed with RPC method error", () => {
+      onCommonFunction.compareRespMsgWithPattern(
+        response.statusCode,
         commonResponse.httpStatus.failedCode.methodNotAllowed,
-        response.body
+        response.body,
+        commonResponse.rpc.methodNotAllowed.code,
+        new RegExp(commonResponse.rpc.methodNotAllowed.message)
       );
     });
   });

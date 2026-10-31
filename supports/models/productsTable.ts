@@ -1,5 +1,6 @@
 import { expect } from "@playwright/test";
 import { query } from "@plugins/postGreSQLConnection";
+import { Decimal } from "decimal.js";
 
 export interface ProductRecord {
   id: number;
@@ -39,10 +40,10 @@ class ProductsTable {
     }
 
     if (responseBody.price !== undefined) {
-      const expectedPrice = Number(responseBody.price);
-      expect(Number(record.price), `DB price mismatch: expected ${expectedPrice}, got ${record.price}`).toEqual(
-        expectedPrice
-      );
+      expect(
+        new Decimal(record.price).equals(new Decimal(responseBody.price)),
+        `DB price mismatch: expected ${responseBody.price}, got ${record.price}`
+      ).toBeTruthy();
     }
 
     if (responseBody.stock !== undefined) {

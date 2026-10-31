@@ -21,14 +21,6 @@
         "type": "invalid_request_error",
         "message": "Quantity must be greater than zero"
       }
-    },
-    "unauthorizedMissingKey": {
-      "message": "No API key found in request",
-      "hint": "No `apikey` request header or url param was found."
-    },
-    "unauthorizedInvalidKey": {
-      "message": "Invalid API key",
-      "hint": "Double check your Supabase `anon` or `service_role` API key."
     }
   },
   "validation": {
@@ -41,19 +33,6 @@
     },
     "invalidIntegerSyntax": {
       "code": "22P02"
-    },
-    "methodNotAllowed": {
-      "code": "PGRST101",
-      "message": "Cannot use the DELETE method on RPC"
-    }
-  },
-  "security": {
-    "unauthorizedReplay": {
-      "message": "Invalid API key",
-      "hint": "Double check your Supabase `anon` or `service_role` API key."
-    },
-    "forbiddenPattern": {
-      "prohibitedKeywords": ["password", "secret", "pg_hba", "BEGIN PRIVATE KEY", "/usr/local", "stack trace"]
     }
   }
 }

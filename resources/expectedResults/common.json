@@ -18,5 +18,34 @@
       "internalServerError": 500,
       "serviceUnavailable": 503
     }
+  },
+  "auth": {
+    "unauthorizedMissingKey": {
+      "message": "No API key found in request",
+      "hint": "No `apikey` request header or url param was found."
+    },
+    "unauthorizedInvalidKey": {
+      "message": "Invalid API key",
+      "hint": "Double check your Supabase `anon` or `service_role` API key."
+    },
+    "unauthorizedRole": {
+      "message": "Invalid API key",
+      "hint": "Double check your Supabase `anon` or `service_role` API key."
+    },
+    "unauthorizedReplay": {
+      "message": "Invalid API key",
+      "hint": "Double check your Supabase `anon` or `service_role` API key."
+    }
+  },
+  "rpc": {
+    "methodNotAllowed": {
+      "code": "PGRST101",
+      "message": "Cannot use the DELETE method on RPC"
+    }
+  },
+  "security": {
+    "forbiddenPattern": {
+      "prohibitedKeywords": ["password", "secret", "pg_hba", "BEGIN PRIVATE KEY", "/usr/local", "stack trace"]
+    }
   }
 }

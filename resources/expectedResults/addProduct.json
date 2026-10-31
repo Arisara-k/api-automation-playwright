@@ -1,41 +1,45 @@
 {
   "business": {
     "negativePrice": {
-      "code": "23514",
-      "message": "check constraint"
+      "error": {
+        "code": "invalid_price_range",
+        "type": "invalid_request_error",
+        "message": "Price cannot be less than zero"
+      }
     },
     "negativeStock": {
-      "code": "23514",
-      "message": "check constraint"
-    },
-    "unauthorized": {
-      "message": "Invalid API key"
+      "error": {
+        "code": "negative_stock",
+        "type": "invalid_request_error",
+        "message": "Stock cannot be negative"
+      }
     }
   },
   "validation": {
     "emptyName": {
-      "code": "23514"
+      "error": {
+        "code": "empty_product_name",
+        "type": "invalid_request_error",
+        "message": "Product name cannot be empty"
+      }
     },
     "invalidPriceFormat": {
-      "code": "22P02"
+      "error": {
+        "code": "invalid_price_format",
+        "type": "invalid_request_error",
+        "message": "Price must be a valid number"
+      }
     },
     "invalidStockFormat": {
-      "code": "22P02"
+      "error": {
+        "code": "invalid_stock_format",
+        "type": "invalid_request_error",
+        "message": "Stock must be an integer"
+      }
     },
     "missingRequiredParam": {
       "code": "PGRST202",
-      "hint": "If a new function was created in the database with this name and parameters, try reloading the schema cache."
-    },
-    "methodNotAllowed": {
-      "code": "405"
-    }
-  },
-  "security": {
-    "unauthorizedReplay": {
-      "message": "Invalid API key"
-    },
-    "forbiddenPattern": {
-      "prohibitedKeywords": ["password", "secret", "pg_hba", "BEGIN PRIVATE KEY", "/usr/local", "stack trace"]
+      "hint": "Perhaps you meant to call the function public.add_product(p_name, p_price, p_stock)"
     }
   }
 }
