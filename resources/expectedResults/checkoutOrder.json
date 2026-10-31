@@ -1,0 +1,58 @@
+{
+  "business": {
+    "success": {
+      "status": "CONFIRMED"
+    },
+    "resourceNotFound": {
+      "error": {
+        "code": "resource_not_found",
+        "type": "invalid_request_error"
+      }
+    },
+    "insufficientStock": {
+      "error": {
+        "code": "insufficient_stock",
+        "type": "invalid_request_error"
+      }
+    },
+    "invalidQuantity": {
+      "error": {
+        "code": "invalid_quantity",
+        "type": "invalid_request_error"
+      }
+    },
+    "unauthorizedMissingKey": {
+      "message": "No API key found in request",
+      "hint": "No `apikey` request header or url param was found."
+    },
+    "unauthorizedInvalidKey": {
+      "message": "Invalid API key",
+      "hint": "Double check your Supabase `anon` or `service_role` API key."
+    }
+  },
+  "validation": {
+    "missingParam": {
+      "code": "PGRST202",
+      "hint": "Perhaps you meant to call the function public.checkout_order(p_product_id, p_quantity)"
+    },
+    "invalidBigintSyntax": {
+      "code": "22P02"
+    },
+    "invalidIntegerSyntax": {
+      "code": "22P02"
+    },
+    "methodNotAllowed": {
+      "code": "PGRST101",
+      "message": "Cannot use the DELETE method on RPC"
+    }
+  },
+  "security": {
+    "unauthorizedReplay": {
+      "message": "Invalid API key",
+      "hint": "Double check your Supabase `anon` or `service_role` API key."
+    },
+    "forbiddenPattern": {
+      "prohibitedKeywords": ["password", "secret", "pg_hba", "BEGIN PRIVATE KEY", "/usr/local", "stack trace"]
+    }
+  }
+}

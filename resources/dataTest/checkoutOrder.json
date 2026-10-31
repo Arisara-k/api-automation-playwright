@@ -1,0 +1,85 @@
+{
+  "headers": {
+    "validHeaders": {
+      "Content-Type": "application/json"
+    },
+    "missingAuthHeaders": {},
+    "invalidAuthHeaders": {
+      "Content-Type": "application/json",
+      "apikey": "invalid-anon-key-xyz",
+      "Authorization": "Bearer invalid-token-xyz"
+    },
+    "expiredAuthHeaders": {
+      "Content-Type": "application/json",
+      "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnZmJ2YnlnYWh2enBzY2FidnJxIiwicm9sZSI6ImFub24iLCJleHAiOjE1MTYyMzkwMjJ9.invalidSignature",
+      "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnZmJ2YnlnYWh2enBzY2FidnJxIiwicm9sZSI6ImFub24iLCJleHAiOjE1MTYyMzkwMjJ9.invalidSignature"
+    }
+  },
+  "business": {
+    "validCheckout": {
+      "p_product_id": 1,
+      "p_quantity": 1
+    },
+    "nonExistentProduct": {
+      "p_product_id": 999999,
+      "p_quantity": 1
+    },
+    "insufficientStock": {
+      "p_product_id": 1,
+      "p_quantity": 99999999
+    },
+    "zeroQuantityBoundary": {
+      "p_product_id": 1,
+      "p_quantity": 0
+    },
+    "negativeQuantity": {
+      "p_product_id": 1,
+      "p_quantity": -5
+    }
+  },
+  "validation": {
+    "missingProductId": {
+      "p_quantity": 1
+    },
+    "missingQuantity": {
+      "p_product_id": 1
+    },
+    "emptyPayload": {},
+    "invalidProductIdFormat": {
+      "p_product_id": "invalid_id_abc",
+      "p_quantity": 1
+    },
+    "invalidQuantityFormat": {
+      "p_product_id": 1,
+      "p_quantity": 1.5
+    }
+  },
+  "security": {
+    "sqlInjection": {
+      "p_product_id": "1 OR 1=1",
+      "p_quantity": 1
+    },
+    "xssInjection": {
+      "p_product_id": "<script>alert('xss')</script>",
+      "p_quantity": 1
+    },
+    "burstRequests": [
+      {
+        "p_product_id": 1,
+        "p_quantity": 1
+      },
+      {
+        "p_product_id": 1,
+        "p_quantity": 1
+      },
+      {
+        "p_product_id": 1,
+        "p_quantity": 1
+      }
+    ],
+    "sensitiveDataPayload": {
+      "p_product_id": null,
+      "p_quantity": "MALFORMED_PROBE"
+    }
+  }
+}
