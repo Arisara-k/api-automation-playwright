@@ -23,6 +23,17 @@ class OrdersTable {
   }
 
   /**
+   * Queries all order records by product ID using Direct PostgreSQL Connection.
+   */
+  public async getOrdersByProductId(productId: number | string): Promise<OrderRecord[]> {
+    const rows = await query<OrderRecord>(
+      "SELECT id, product_id, quantity, total_price, status, created_at FROM orders WHERE product_id = $1 ORDER BY id ASC",
+      [productId]
+    );
+    return rows;
+  }
+
+  /**
    * Asserts that API response body matches persistent database state in orders table.
    */
   public verifyOrderMatchesDb(responseBody: Record<string, any>, dbRecord: OrderRecord | null): void {
@@ -52,6 +63,13 @@ class OrdersTable {
     if (responseBody.status !== undefined) {
       expect(record.status).toBe(responseBody.status);
     }
+  }
+
+  /**
+   * Asserts the count of orders for a given product or scope.
+   */
+  public verifyOrdersCount(orders: OrderRecord[], expectedCount: number): void {
+    expect(orders.length, `Expected ${expectedCount} orders in DB, but found ${orders.length}`).toBe(expectedCount);
   }
 
   /**

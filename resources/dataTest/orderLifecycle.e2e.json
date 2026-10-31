@@ -1,0 +1,58 @@
+{
+  "scenario1_happyPath": {
+    "product": {
+      "p_name": "E2E Gaming Mouse Pro",
+      "p_price": 1500.0,
+      "p_stock": 10
+    },
+    "checkout": {
+      "p_quantity": 3
+    }
+  },
+  "scenario2_sequentialDepletion": {
+    "product": {
+      "p_name": "E2E Mechanical Keyboard RGB",
+      "p_price": 2800.0,
+      "p_stock": 5
+    },
+    "firstCheckout": {
+      "p_quantity": 2
+    },
+    "secondCheckout": {
+      "p_quantity": 3
+    }
+  },
+  "scenario3_stockExhaustionRejection": {
+    "product": {
+      "p_name": "E2E Wireless Earbuds Limited",
+      "p_price": 3200.0,
+      "p_stock": 2
+    },
+    "depleteCheckout": {
+      "p_quantity": 2
+    },
+    "rejectedCheckout": {
+      "p_quantity": 1
+    }
+  },
+  "scenario4_exactStockBoundary": {
+    "product": {
+      "p_name": "E2E 4K Ultra Monitor",
+      "p_price": 9900.0,
+      "p_stock": 15
+    },
+    "checkout": {
+      "p_quantity": 15
+    }
+  },
+  "scenario5_excessQuantityRejection": {
+    "product": {
+      "p_name": "E2E Smart Fitness Band",
+      "p_price": 1990.0,
+      "p_stock": 10
+    },
+    "rejectedCheckout": {
+      "p_quantity": 15
+    }
+  }
+}

@@ -18,7 +18,8 @@
     "invalidQuantity": {
       "error": {
         "code": "invalid_quantity",
-        "type": "invalid_request_error"
+        "type": "invalid_request_error",
+        "message": "Quantity must be greater than zero"
       }
     },
     "unauthorizedMissingKey": {
