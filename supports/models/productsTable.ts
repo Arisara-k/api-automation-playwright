@@ -21,10 +21,6 @@ class ProductsTable {
   }
 
   /**
-   * Asserts that API response data matches persistent database state.
-   * Fails test if DB record is not found or values mismatch.
-   */
-  /**
    * Asserts that API response body matches persistent database state.
    * Fails test if DB record is not found or values mismatch.
    */
@@ -65,6 +61,17 @@ class ProductsTable {
       afterStock,
       `Product stock decrement mismatch: before=${beforeStock}, quantity=${quantity}, expected after=${beforeStock - quantity}, got=${afterStock}`
     ).toBe(beforeStock - quantity);
+  }
+
+  /**
+   * Asserts that product stock matches expected value exactly.
+   */
+  public verifyExactStock(dbRecord: ProductRecord | null, expectedStock: number): void {
+    expect(dbRecord, "Expected product record to exist in database").not.toBeNull();
+    const record = dbRecord as ProductRecord;
+    expect(Number(record.stock), `Product stock mismatch: expected ${expectedStock}, got ${record.stock}`).toBe(
+      expectedStock
+    );
   }
 
   /**

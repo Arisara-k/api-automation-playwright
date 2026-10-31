@@ -1,5 +1,8 @@
 import { ENV } from "@globalVariable";
 import { expect, request } from "@playwright/test";
+import expectedResult from "@resources/expectedResults/checkoutOrder.json";
+import commonResponse from "@resources/expectedResults/common.json";
+import { onCommonFunction } from "@utils/commonFunction";
 import { z } from "zod";
 
 /**
@@ -59,49 +62,50 @@ class CheckoutOrderService {
       ignoreHTTPSErrors: true
     });
 
-    let rawResponse: import("@playwright/test").APIResponse;
-    const requestOptions = {
-      headers: mergedHeaders,
-      params,
-      ...(body !== undefined ? { data: body } : {})
-    };
-
-    switch (method.toUpperCase()) {
-      case "POST":
-        rawResponse = await ctx.post(path, requestOptions);
-        break;
-      case "GET":
-        rawResponse = await ctx.get(path, requestOptions);
-        break;
-      case "PUT":
-        rawResponse = await ctx.put(path, requestOptions);
-        break;
-      case "PATCH":
-        rawResponse = await ctx.patch(path, requestOptions);
-        break;
-      case "DELETE":
-        rawResponse = await ctx.delete(path, requestOptions);
-        break;
-      default:
-        rawResponse = await ctx.post(path, requestOptions);
-        break;
-    }
-
-    let parsedBody: Record<string, any> = {};
     try {
-      parsedBody = await rawResponse.json();
-    } catch {
-      parsedBody = { rawText: await rawResponse.text() };
+      let rawResponse: import("@playwright/test").APIResponse;
+      const requestOptions = {
+        headers: mergedHeaders,
+        params,
+        ...(body !== undefined ? { data: body } : {})
+      };
+
+      switch (method.toUpperCase()) {
+        case "POST":
+          rawResponse = await ctx.post(path, requestOptions);
+          break;
+        case "GET":
+          rawResponse = await ctx.get(path, requestOptions);
+          break;
+        case "PUT":
+          rawResponse = await ctx.put(path, requestOptions);
+          break;
+        case "PATCH":
+          rawResponse = await ctx.patch(path, requestOptions);
+          break;
+        case "DELETE":
+          rawResponse = await ctx.delete(path, requestOptions);
+          break;
+        default:
+          rawResponse = await ctx.post(path, requestOptions);
+          break;
+      }
+
+      let parsedBody: Record<string, any> = {};
+      try {
+        parsedBody = await rawResponse.json();
+      } catch {
+        parsedBody = { rawText: await rawResponse.text() };
+      }
+
+      return {
+        statusCode: rawResponse.status(),
+        statusText: rawResponse.statusText(),
+        body: parsedBody
+      };
+    } finally {
+      await ctx.dispose();
     }
-
-    const result = {
-      statusCode: rawResponse.status(),
-      statusText: rawResponse.statusText(),
-      body: parsedBody
-    };
-
-    await ctx.dispose();
-    return result;
   }
 
   /**
@@ -112,6 +116,44 @@ class CheckoutOrderService {
     const parsed = checkoutOrderSuccessSchema.safeParse(response.body);
     const errorDetails = parsed.success ? "" : JSON.stringify(parsed.error.issues, null, 2);
     expect(parsed.success, `Response shape does not match Zod schema:\n${errorDetails}`).toBeTruthy();
+  }
+
+  /**
+   * Verifies that API response matches HTTP 400 Bad Request with insufficient stock error contract.
+   */
+  public verifyInsufficientStockResponse(response: Record<string, any>): void {
+    onCommonFunction.compareRespMsgWithPattern(
+      response.statusCode,
+      commonResponse.httpStatus.failedCode.badRequest,
+      response.body,
+      expectedResult.business.insufficientStock.error.code,
+      /Insufficient stock/
+    );
+  }
+
+  /**
+   * Verifies that API response matches HTTP 404 Resource Not Found error contract.
+   */
+  public verifyResourceNotFoundResponse(response: Record<string, any>): void {
+    onCommonFunction.compareRespMsgWithPattern(
+      response.statusCode,
+      commonResponse.httpStatus.failedCode.notFound,
+      response.body,
+      expectedResult.business.resourceNotFound.error.code,
+      /was not found/
+    );
+  }
+
+  /**
+   * Verifies that API response matches HTTP 400 Bad Request with exact invalid quantity error contract.
+   */
+  public verifyInvalidQuantityResponse(response: Record<string, any>): void {
+    onCommonFunction.compareRespMsgWithExpectedFile(
+      response.statusCode,
+      commonResponse.httpStatus.failedCode.badRequest,
+      response.body,
+      expectedResult.business.invalidQuantity
+    );
   }
 
   /**
@@ -127,7 +169,7 @@ class CheckoutOrderService {
         return Number(responseBody.id);
       }
     }
-    return Number(responseBody?.order_id);
+    return Number(responseBody.order_id);
   }
 }
 

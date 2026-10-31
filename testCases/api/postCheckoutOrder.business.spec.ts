@@ -81,13 +81,7 @@ test.describe("Checkout Order RPC - Tier 2: Business Test Suite", () => {
     });
 
     await test.step("Verify API Response > HTTP Status should be 404 Resource Not Found", () => {
-      onCommonFunction.compareRespMsgWithPattern(
-        response.statusCode,
-        commonResponse.httpStatus.failedCode.notFound,
-        response.body,
-        expectedResult.business.resourceNotFound.error.code,
-        /was not found/
-      );
+      onCheckoutOrderService.verifyResourceNotFoundResponse(response);
     });
   });
 
@@ -107,13 +101,7 @@ test.describe("Checkout Order RPC - Tier 2: Business Test Suite", () => {
     });
 
     await test.step("Verify API Response > HTTP Status should be 400 Bad Request", () => {
-      onCommonFunction.compareRespMsgWithPattern(
-        response.statusCode,
-        commonResponse.httpStatus.failedCode.badRequest,
-        response.body,
-        expectedResult.business.insufficientStock.error.code,
-        /Insufficient stock/
-      );
+      onCheckoutOrderService.verifyInsufficientStockResponse(response);
     });
   });
 
@@ -133,13 +121,7 @@ test.describe("Checkout Order RPC - Tier 2: Business Test Suite", () => {
     });
 
     await test.step("Verify API Response > HTTP Status should be 400 Bad Request", () => {
-      onCommonFunction.compareRespMsgWithPattern(
-        response.statusCode,
-        commonResponse.httpStatus.failedCode.badRequest,
-        response.body,
-        expectedResult.business.invalidQuantity.error.code,
-        /Quantity must be greater than zero/
-      );
+      onCheckoutOrderService.verifyInvalidQuantityResponse(response);
     });
   });
 
@@ -159,13 +141,7 @@ test.describe("Checkout Order RPC - Tier 2: Business Test Suite", () => {
     });
 
     await test.step("Verify API Response > HTTP Status should be 400 Bad Request", () => {
-      onCommonFunction.compareRespMsgWithPattern(
-        response.statusCode,
-        commonResponse.httpStatus.failedCode.badRequest,
-        response.body,
-        expectedResult.business.invalidQuantity.error.code,
-        /Quantity must be greater than zero/
-      );
+      onCheckoutOrderService.verifyInvalidQuantityResponse(response);
     });
   });
 

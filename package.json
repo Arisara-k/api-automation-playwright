@@ -8,6 +8,7 @@
     "test:regression": "npx playwright test -g @regression",
     "test:validation": "npx playwright test -g @functional",
     "test:security": "npx playwright test -g @security",
+    "test:e2e": "npx playwright test -g @e2e",
     "check": "npx @biomejs/biome check --write",
     "lint": "npx @biomejs/biome lint --write",
     "format": "npx @biomejs/biome format --write",
