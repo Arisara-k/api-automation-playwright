@@ -57,6 +57,27 @@ class ProductsTable {
     }
   }
 
+  /**
+   * Asserts that product stock was correctly decremented by ordered quantity.
+   */
+  public verifyStockDecremented(beforeStock: number, afterStock: number, quantity: number): void {
+    expect(
+      afterStock,
+      `Product stock decrement mismatch: before=${beforeStock}, quantity=${quantity}, expected after=${beforeStock - quantity}, got=${afterStock}`
+    ).toBe(beforeStock - quantity);
+  }
+
+  /**
+   * Inserts a test product directly for test isolation.
+   */
+  public async createProduct(product: { name: string; price: number; stock: number }): Promise<number> {
+    const rows = await query<{ id: number }>(
+      "INSERT INTO products (name, price, stock) VALUES ($1, $2, $3) RETURNING id",
+      [product.name, product.price, product.stock]
+    );
+    return Number(rows[0].id);
+  }
+
   public async deleteProductsByIds(productIds: (number | string)[]): Promise<void> {
     if (!productIds || productIds.length === 0) {
       return;
